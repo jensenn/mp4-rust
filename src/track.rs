@@ -9,9 +9,9 @@ use crate::mp4box::traf::TrafBox;
 use crate::mp4box::trak::TrakBox;
 use crate::mp4box::trun::TrunBox;
 use crate::mp4box::{
-    avc1::Avc1Box, co64::Co64Box, ctts::CttsBox, ctts::CttsEntry, hev1::Hev1Box, mp4a::Mp4aBox,
-    smhd::SmhdBox, stco::StcoBox, stsc::StscEntry, stss::StssBox, stts::SttsEntry, tx3g::Tx3gBox,
-    vmhd::VmhdBox, vp09::Vp09Box,
+    avc1::Avc1Box, co64::Co64Box, ctts::CttsBox, ctts::CttsEntry, ec_3::Eac3Box, hev1::Hev1Box,
+    mp4a::Mp4aBox, smhd::SmhdBox, stco::StcoBox, stsc::StscEntry, stss::StssBox, stts::SttsEntry,
+    tx3g::Tx3gBox, vmhd::VmhdBox, vp09::Vp09Box,
 };
 use crate::*;
 
@@ -29,6 +29,8 @@ impl From<MediaConfig> for TrackConfig {
             MediaConfig::AvcConfig(avc_conf) => Self::from(avc_conf),
             MediaConfig::HevcConfig(hevc_conf) => Self::from(hevc_conf),
             MediaConfig::AacConfig(aac_conf) => Self::from(aac_conf),
+            MediaConfig::Ac3Config(ac3_conf) => Self::from(ac3_conf),
+            MediaConfig::Eac3Config(eac3_conf) => Self::from(eac3_conf),
             MediaConfig::TtxtConfig(ttxt_conf) => Self::from(ttxt_conf),
             MediaConfig::Vp9Config(vp9_config) => Self::from(vp9_config),
             MediaConfig::WvttConfig(wvtt_conf) => Self::from(wvtt_conf),
@@ -65,6 +67,28 @@ impl From<AacConfig> for TrackConfig {
             timescale: 1000,               // XXX
             language: String::from("und"), // XXX
             media_conf: MediaConfig::AacConfig(aac_conf),
+        }
+    }
+}
+
+impl From<Ac3Config> for TrackConfig {
+    fn from(ac3_conf: Ac3Config) -> Self {
+        Self {
+            track_type: TrackType::Audio,
+            timescale: 1000,               // XXX
+            language: String::from("und"), // XXX
+            media_conf: MediaConfig::Ac3Config(ac3_conf),
+        }
+    }
+}
+
+impl From<Eac3Config> for TrackConfig {
+    fn from(eac3_conf: Eac3Config) -> Self {
+        Self {
+            track_type: TrackType::Audio,
+            timescale: 1000,               // XXX
+            language: String::from("und"), // XXX
+            media_conf: MediaConfig::Eac3Config(eac3_conf),
         }
     }
 }
@@ -142,6 +166,10 @@ impl Mp4Track {
             Ok(MediaType::VP9)
         } else if self.trak.mdia.minf.stbl.stsd.mp4a.is_some() {
             Ok(MediaType::AAC)
+        } else if self.trak.mdia.minf.stbl.stsd.ac3.is_some() {
+            Ok(MediaType::AC3)
+        } else if self.trak.mdia.minf.stbl.stsd.eac3.is_some() {
+            Ok(MediaType::EAC3)
         } else if self.trak.mdia.minf.stbl.stsd.tx3g.is_some() {
             Ok(MediaType::TTXT)
         } else if self.trak.mdia.minf.stbl.stsd.wvtt.is_some() {
@@ -149,6 +177,10 @@ impl Mp4Track {
         } else if let Some(ref enca) = self.trak.mdia.minf.stbl.stsd.enca {
             if enca.mp4a.is_some() {
                 Ok(MediaType::AAC)
+            } else if enca.ac3.is_some() {
+                Ok(MediaType::AC3)
+            } else if enca.eac3.is_some() {
+                Ok(MediaType::EAC3)
             } else {
                 Err(Error::InvalidData("unsupported media type"))
             }
@@ -176,6 +208,10 @@ impl Mp4Track {
             Ok(FourCC::from(BoxType::Vp09Box))
         } else if self.trak.mdia.minf.stbl.stsd.mp4a.is_some() {
             Ok(FourCC::from(BoxType::Mp4aBox))
+        } else if self.trak.mdia.minf.stbl.stsd.ac3.is_some() {
+            Ok(FourCC::from(BoxType::Ac3Box))
+        } else if self.trak.mdia.minf.stbl.stsd.eac3.is_some() {
+            Ok(FourCC::from(BoxType::Eac3Box))
         } else if self.trak.mdia.minf.stbl.stsd.tx3g.is_some() {
             Ok(FourCC::from(BoxType::Tx3gBox))
         } else if self.trak.mdia.minf.stbl.stsd.wvtt.is_some() {
@@ -183,6 +219,10 @@ impl Mp4Track {
         } else if let Some(ref enca) = self.trak.mdia.minf.stbl.stsd.enca {
             if enca.mp4a.is_some() {
                 Ok(FourCC::from(BoxType::Mp4aBox))
+            } else if enca.ac3.is_some() {
+                Ok(FourCC::from(BoxType::Ac3Box))
+            } else if enca.eac3.is_some() {
+                Ok(FourCC::from(BoxType::Eac3Box))
             } else {
                 Err(Error::InvalidData("unsupported sample entry box"))
             }
@@ -826,6 +866,20 @@ impl Mp4TrackWriter {
 
                 let mp4a = Mp4aBox::new(aac_config);
                 trak.mdia.minf.stbl.stsd.mp4a = Some(mp4a);
+            }
+            MediaConfig::Ac3Config(ref ac3_config) => {
+                let smhd = SmhdBox::default();
+                trak.mdia.minf.smhd = Some(smhd);
+
+                let ac3 = Ac3Box::new(ac3_config);
+                trak.mdia.minf.stbl.stsd.ac3 = Some(ac3);
+            }
+            MediaConfig::Eac3Config(ref eac3_config) => {
+                let smhd = SmhdBox::default();
+                trak.mdia.minf.smhd = Some(smhd);
+
+                let eac3 = Eac3Box::new(eac3_config);
+                trak.mdia.minf.stbl.stsd.eac3 = Some(eac3);
             }
             MediaConfig::TtxtConfig(ref _ttxt_config) => {
                 let tx3g = Tx3gBox::default();
