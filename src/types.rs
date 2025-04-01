@@ -237,6 +237,8 @@ const MEDIA_TYPE_H264: &str = "h264";
 const MEDIA_TYPE_H265: &str = "h265";
 const MEDIA_TYPE_VP9: &str = "vp9";
 const MEDIA_TYPE_AAC: &str = "aac";
+const MEDIA_TYPE_AC3: &str = "ac3";
+const MEDIA_TYPE_EAC3: &str = "eac3";
 const MEDIA_TYPE_TTXT: &str = "ttxt";
 const MEDIA_TYPE_WVTT: &str = "wvtt";
 
@@ -246,6 +248,8 @@ pub enum MediaType {
     H265,
     VP9,
     AAC,
+    AC3,
+    EAC3,
     TTXT,
     WVTT,
 }
@@ -279,6 +283,8 @@ impl From<MediaType> for &str {
             MediaType::H265 => MEDIA_TYPE_H265,
             MediaType::VP9 => MEDIA_TYPE_VP9,
             MediaType::AAC => MEDIA_TYPE_AAC,
+            MediaType::AC3 => MEDIA_TYPE_AC3,
+            MediaType::EAC3 => MEDIA_TYPE_EAC3,
             MediaType::TTXT => MEDIA_TYPE_TTXT,
             MediaType::WVTT => MEDIA_TYPE_WVTT,
         }
@@ -292,6 +298,8 @@ impl From<&MediaType> for &str {
             MediaType::H265 => MEDIA_TYPE_H265,
             MediaType::VP9 => MEDIA_TYPE_VP9,
             MediaType::AAC => MEDIA_TYPE_AAC,
+            MediaType::AC3 => MEDIA_TYPE_AC3,
+            MediaType::EAC3 => MEDIA_TYPE_EAC3,
             MediaType::TTXT => MEDIA_TYPE_TTXT,
             MediaType::WVTT => MEDIA_TYPE_WVTT,
         }
@@ -624,6 +632,36 @@ impl Default for AacConfig {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Ac3Config {
+    pub sampling_rate: u16,
+    pub ac3: Ac3Box,
+}
+
+impl Default for Ac3Config {
+    fn default() -> Self {
+        Self {
+            sampling_rate: 48000,
+            ac3: Ac3Box::default(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Eac3Config {
+    pub sampling_rate: u16,
+    pub eac3: Eac3Box,
+}
+
+impl Default for Eac3Config {
+    fn default() -> Self {
+        Self {
+            sampling_rate: 48000,
+            eac3: Eac3Box::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct TtxtConfig {}
 
@@ -636,6 +674,8 @@ pub enum MediaConfig {
     HevcConfig(HevcConfig),
     Vp9Config(Vp9Config),
     AacConfig(AacConfig),
+    Ac3Config(Ac3Config),
+    Eac3Config(Eac3Config),
     TtxtConfig(TtxtConfig),
     WvttConfig(WvttConfig),
 }

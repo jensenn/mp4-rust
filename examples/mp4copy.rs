@@ -5,8 +5,8 @@ use std::io::{self, BufReader, BufWriter};
 use std::path::Path;
 
 use mp4::{
-    AacConfig, AvcConfig, HevcConfig, MediaConfig, MediaType, Mp4Config, Result, TrackConfig,
-    TtxtConfig, Vp9Config, WvttConfig,
+    AacConfig, AvcConfig, Error, HevcConfig, MediaConfig, MediaType, Mp4Config, Result,
+    TrackConfig, TtxtConfig, Vp9Config, WvttConfig,
 };
 
 fn main() {
@@ -66,6 +66,7 @@ fn copy<P: AsRef<Path>>(src_filename: &P, dst_filename: &P) -> Result<()> {
             }),
             MediaType::TTXT => MediaConfig::TtxtConfig(TtxtConfig {}),
             MediaType::WVTT => MediaConfig::WvttConfig(WvttConfig {}),
+            _ => return Err(Error::InvalidData("unsupported media type")),
         };
 
         let track_conf = TrackConfig {

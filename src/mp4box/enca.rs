@@ -10,6 +10,12 @@ pub struct EncaBox {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mp4a: Option<Mp4aBox>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ac3: Option<Ac3Box>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub eac3: Option<Eac3Box>,
+
     pub sinf: SinfBox,
 }
 
@@ -23,6 +29,12 @@ impl EncaBox {
         if let Some(ref mp4a) = self.mp4a {
             // HEADER_SIZE intentionally omitted
             size += mp4a.box_size();
+        } else if let Some(ref ac3) = self.ac3 {
+            // HEADER_SIZE intentionally omitted
+            size += ac3.box_size();
+        } else if let Some(ref eac3) = self.eac3 {
+            // HEADER_SIZE intentionally omitted
+            size += eac3.box_size();
         } else {
             size += HEADER_SIZE + RESERVED_DATA_SIZE;
         }
@@ -64,6 +76,8 @@ impl<R: Read + Seek> ReadBox<&mut R> for EncaBox {
         let start = box_start(reader)?;
 
         let mut mp4a = None;
+        let mut ac3 = None;
+        let mut eac3 = None;
         let mut sinf = None;
 
         // skip current container items
@@ -99,13 +113,27 @@ impl<R: Read + Seek> ReadBox<&mut R> for EncaBox {
         reader.seek(SeekFrom::Start(start + HEADER_SIZE))?;
 
         let original_format: BoxType = sinf.frma.original_format.into();
-        if original_format == BoxType::Mp4aBox {
-            mp4a = Some(Mp4aBox::read_box(reader, size)?);
+        match original_format {
+            BoxType::Mp4aBox => {
+                mp4a = Some(Mp4aBox::read_box(reader, size)?);
+            }
+            BoxType::Ac3Box => {
+                ac3 = Some(Ac3Box::read_box(reader, size)?);
+            }
+            BoxType::Eac3Box => {
+                eac3 = Some(Eac3Box::read_box(reader, size)?);
+            }
+            _ => (),
         }
 
         skip_bytes_to(reader, start + size)?;
 
-        Ok(EncaBox { mp4a, sinf })
+        Ok(EncaBox {
+            mp4a,
+            ac3,
+            eac3,
+            sinf,
+        })
     }
 }
 
@@ -119,6 +147,18 @@ impl<W: Write> WriteBox<&mut W> for EncaBox {
             // must be removed
             let mut buf = Vec::with_capacity(mp4a.box_size() as usize);
             mp4a.write_box(&mut buf)?;
+            writer.write_all(&buf[HEADER_SIZE as usize..])?;
+        } else if let Some(ref ac3) = self.ac3 {
+            // the enca box header is used, so the header from this box
+            // must be removed
+            let mut buf = Vec::with_capacity(ac3.box_size() as usize);
+            ac3.write_box(&mut buf)?;
+            writer.write_all(&buf[HEADER_SIZE as usize..])?;
+        } else if let Some(ref eac3) = self.eac3 {
+            // the enca box header is used, so the header from this box
+            // must be removed
+            let mut buf = Vec::with_capacity(eac3.box_size() as usize);
+            eac3.write_box(&mut buf)?;
             writer.write_all(&buf[HEADER_SIZE as usize..])?;
         } else {
             writer.write_all(&[0; RESERVED_DATA_SIZE as usize])?;

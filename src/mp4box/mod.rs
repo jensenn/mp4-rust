@@ -75,12 +75,14 @@ use std::io::{Read, Seek, SeekFrom, Write};
 
 use crate::*;
 
+pub(crate) mod ac_3;
 pub(crate) mod avc1;
 pub(crate) mod co64;
 pub(crate) mod ctim;
 pub(crate) mod ctts;
 pub(crate) mod data;
 pub(crate) mod dinf;
+pub(crate) mod ec_3;
 pub(crate) mod edts;
 pub(crate) mod elst;
 pub(crate) mod emsg;
@@ -142,12 +144,14 @@ pub(crate) mod vttc;
 pub(crate) mod vtte;
 pub(crate) mod wvtt;
 
+pub use ac_3::{Ac3Box, Dac3Box};
 pub use avc1::Avc1Box;
 pub use co64::Co64Box;
 pub use ctim::CtimBox;
 pub use ctts::CttsBox;
 pub use data::DataBox;
 pub use dinf::DinfBox;
+pub use ec_3::{Dec3Box, Eac3Box};
 pub use edts::EdtsBox;
 pub use elst::ElstBox;
 pub use emsg::EmsgBox;
@@ -287,6 +291,10 @@ boxtype! {
     Hev1Box => 0x68657631,
     HvcCBox => 0x68766343,
     Mp4aBox => 0x6d703461,
+    Ac3Box => 0x61632D33,
+    Eac3Box => 0x65632D33,
+    Dac3Box => 0x64616333,
+    Dec3Box => 0x64656333,
     EsdsBox => 0x65736473,
     Tx3gBox => 0x74783367,
     VpccBox => 0x76706343,
