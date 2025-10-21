@@ -3,14 +3,8 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct VtteBox {}
-
-impl Default for VtteBox {
-    fn default() -> Self {
-        VtteBox {}
-    }
-}
 
 impl VtteBox {
     pub fn get_type(&self) -> BoxType {

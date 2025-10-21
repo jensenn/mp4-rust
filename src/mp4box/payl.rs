@@ -3,17 +3,9 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct PaylBox {
     pub cue_text: String,
-}
-
-impl Default for PaylBox {
-    fn default() -> Self {
-        PaylBox {
-            cue_text: String::new(),
-        }
-    }
 }
 
 impl PaylBox {

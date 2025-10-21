@@ -3,17 +3,9 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct SttgBox {
     pub settings: String,
-}
-
-impl Default for SttgBox {
-    fn default() -> Self {
-        SttgBox {
-            settings: String::new(),
-        }
-    }
 }
 
 impl SttgBox {

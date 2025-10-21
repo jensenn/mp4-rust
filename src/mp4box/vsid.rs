@@ -3,15 +3,9 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct VsidBox {
     pub source_id: u32,
-}
-
-impl Default for VsidBox {
-    fn default() -> Self {
-        VsidBox { source_id: 0 }
-    }
 }
 
 impl VsidBox {

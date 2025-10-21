@@ -3,17 +3,9 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct IdenBox {
     pub cue_id: String,
-}
-
-impl Default for IdenBox {
-    fn default() -> Self {
-        IdenBox {
-            cue_id: String::new(),
-        }
-    }
 }
 
 impl IdenBox {

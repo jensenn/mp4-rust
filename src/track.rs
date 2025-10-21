@@ -765,7 +765,7 @@ impl Mp4Track {
     fn is_sync_sample(&self, sample_id: u32) -> bool {
         if !self.trafs.is_empty() {
             let sample_sizes_count = self.sample_count() / self.trafs.len() as u32;
-            return sample_id == 1 || sample_id % sample_sizes_count == 0;
+            return sample_id == 1 || sample_id.is_multiple_of(sample_sizes_count);
         }
 
         if let Some(ref stss) = self.trak.mdia.minf.stbl.stss {

@@ -3,25 +3,13 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct VttcBox {
     pub source_id: Option<VsidBox>,
     pub cue_id: Option<IdenBox>,
     pub cue_time: Option<CtimBox>,
     pub cue_settings: Option<SttgBox>,
     pub payload: PaylBox,
-}
-
-impl Default for VttcBox {
-    fn default() -> Self {
-        VttcBox {
-            source_id: None,
-            cue_id: None,
-            cue_time: None,
-            cue_settings: None,
-            payload: PaylBox::default(),
-        }
-    }
 }
 
 impl VttcBox {

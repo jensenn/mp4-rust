@@ -108,7 +108,7 @@ impl<R: Read + Seek> ReadBox<&mut R> for Eac3Box {
 
         skip_bytes_to(reader, end)?;
 
-        let dec3 = dec3.ok_or_else(|| Error::InvalidData("EC3SpecificBox not found"))?;
+        let dec3 = dec3.ok_or(Error::InvalidData("EC3SpecificBox not found"))?;
 
         Ok(Eac3Box {
             data_reference_index,

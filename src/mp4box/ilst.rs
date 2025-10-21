@@ -166,7 +166,7 @@ impl<R: Read + Seek> ReadBox<&mut R> for IlstItemBox {
 }
 
 impl<'a> Metadata<'a> for IlstBox {
-    fn title(&self) -> Option<Cow<str>> {
+    fn title(&'_ self) -> Option<Cow<'_, str>> {
         self.items.get(&MetadataKey::Title).map(item_to_str)
     }
 
@@ -178,7 +178,7 @@ impl<'a> Metadata<'a> for IlstBox {
         self.items.get(&MetadataKey::Poster).map(item_to_bytes)
     }
 
-    fn summary(&self) -> Option<Cow<str>> {
+    fn summary(&'_ self) -> Option<Cow<'_, str>> {
         self.items.get(&MetadataKey::Summary).map(item_to_str)
     }
 }
@@ -187,7 +187,7 @@ fn item_to_bytes(item: &IlstItemBox) -> &[u8] {
     &item.data.data
 }
 
-fn item_to_str(item: &IlstItemBox) -> Cow<str> {
+fn item_to_str(item: &IlstItemBox) -> Cow<'_, str> {
     String::from_utf8_lossy(&item.data.data)
 }
 

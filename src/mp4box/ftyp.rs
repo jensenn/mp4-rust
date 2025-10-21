@@ -53,7 +53,7 @@ impl<R: Read + Seek> ReadBox<&mut R> for FtypBox {
     fn read_box(reader: &mut R, size: u64) -> Result<Self> {
         let start = box_start(reader)?;
 
-        if size < 16 || size % 4 != 0 {
+        if size < 16 || !size.is_multiple_of(4) {
             return Err(Error::InvalidData("ftyp size too small or not aligned"));
         }
         let brand_count = (size - 16) / 4; // header + major + minor

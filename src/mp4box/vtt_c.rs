@@ -3,17 +3,9 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct VttCBox {
     pub config: String,
-}
-
-impl Default for VttCBox {
-    fn default() -> Self {
-        VttCBox {
-            config: String::new(),
-        }
-    }
 }
 
 impl VttCBox {

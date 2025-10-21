@@ -3,17 +3,9 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct VlabBox {
     pub source_label: String,
-}
-
-impl Default for VlabBox {
-    fn default() -> Self {
-        VlabBox {
-            source_label: String::new(),
-        }
-    }
 }
 
 impl VlabBox {

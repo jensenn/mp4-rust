@@ -3,17 +3,9 @@ use std::io::{Read, Seek, Write};
 
 use crate::mp4box::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
 pub struct CtimBox {
     pub current_time: String,
-}
-
-impl Default for CtimBox {
-    fn default() -> Self {
-        CtimBox {
-            current_time: String::new(),
-        }
-    }
 }
 
 impl CtimBox {
