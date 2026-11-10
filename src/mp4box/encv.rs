@@ -118,7 +118,7 @@ impl<R: Read + Seek> ReadBox<&mut R> for EncvBox {
 
         let original_format: BoxType = sinf.frma.original_format.into();
         match original_format {
-            BoxType::Avc1Box => {
+            BoxType::Avc1Box | BoxType::Avc3Box => {
                 avc1 = Some(Avc1Box::read_box(reader, size)?);
             }
             BoxType::Hev1Box => {

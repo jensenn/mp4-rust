@@ -122,7 +122,7 @@ impl<R: Read + Seek> ReadBox<&mut R> for StsdBox {
         }
 
         match name {
-            BoxType::Avc1Box => {
+            BoxType::Avc1Box | BoxType::Avc3Box => {
                 avc1 = Some(Avc1Box::read_box(reader, s)?);
             }
             BoxType::Hev1Box => {
